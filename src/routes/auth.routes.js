@@ -1,16 +1,18 @@
 const express = require("express");
 const router = express.Router();
+const verifyToken = require("../middlewares/auth");
 const authController = require("../controllers/auth.controller");
-// // Đăng ký người dùng mới
-// router.post("/register", authController.register);
+
+//Đăng ký người dùng mới
+router.post("/register", authController.register);
 
 // // Đăng nhập người dùng
-// router.post("/login", authController.login);
+router.post("/login", authController.login);
 
-// // Đổi mật khẩu (tuỳ chọn)
-// router.post("/change-password", authController.changePassword);
+// Quên mật khẩu
+router.post("/forgot-password", authController.forgotPassword);
 
-// // Xác thực token (middleware, ví dụ dùng cho các route bảo vệ)
-// router.get("/verify-token", authController.verifyToken);
+//Đổi mật khẩu (tuỳ chọn)
+router.post("/change-password", verifyToken, authController.changePassword);
 
 module.exports = router;
