@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 
+//Cấu hình
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -16,10 +17,9 @@ const sendEmail = async (to, subject, htmlContent) => {
       subject,
       html: htmlContent,
     });
-
-    console.log("✅ Email sent to:", to);
+    console.log("Email sent to:", to);
   } catch (err) {
-    console.error("❌ Email sending failed:", err);
+    console.error("Email sending failed:", err);
     throw err;
   }
 };

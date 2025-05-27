@@ -1,9 +1,10 @@
 const express = require("express");
 const morgan = require("morgan"); //dùng để ghi log request
 const cors = require("cors"); //để be có thể nhận request từ fe
-const mongoose = require("mongoose");
-require("dotenv").config();
-const indexRoutes = require("./routes/index.routes");
+const mongoose = require("mongoose"); // ODM để kết nối và làm việc với MongoDB
+require("dotenv").config(); // Đọc các biến môi trường từ file .env
+const indexRoutes = require("./routes/index.routes"); // Import router chính
+// const multer = require("multer");
 
 const app = express();
 
@@ -14,15 +15,20 @@ const app = express();
 // });
 
 // Cấu hình
-
-//1:Cấu hình parser để có thể nhận req.body ở backend.
+//1:Cấu hình parser để backend đọc được dữ liệu JSON mà frontend gửi lên (thường là POST, PUT).
+//Đọc trong body.req
 app.use(express.json());
+
+//Cấu hình để đọc dữ liệu dạng formdata từ FE
+// Cấu hình nơi lưu trữ file (nếu có upload file)
+// const storage = multer.memoryStorage(); // hoặc dùng diskStorage để lưu vào ổ cứng
+// const upload = multer({ storage: storage });
 
 //2:Cấu hình cros để be có thể nhận request từ fe
 app.use(
   cors({
     origin: "http://localhost:3000", // Đảm bảo cho phép frontend gửi request
-    methods: ["GET", "POST", "PUT", "DELETE"], // Các phương thức HTTP được phép
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Các phương thức HTTP được phép
     allowedHeaders: ["Content-Type", "Authorization"], // Các header được phép
   })
 );
@@ -40,6 +46,10 @@ mongoose
   })
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("MongoDB connection error:", err));
+
+//6: Thiết lập Pug làm template engine
+app.set("view engine", "pug");
+app.set("views", "./views");
 
 module.exports = app;
 

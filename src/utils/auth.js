@@ -1,4 +1,11 @@
+//Những hàm dùng chung liên quan đến mật khẩu
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const Verification = require("../models/Verification.model");
+const path = require("path");
+const pug = require("pug");
+const sendEmail = require("../utils/sendMail");
+const mongoose = require("mongoose");
 
 // Mã hóa mật khẩu
 const hashPassword = async (plainPassword) => {
@@ -53,8 +60,38 @@ function shuffleArray(array) {
   return array;
 }
 
+//Những hàm dùng chung liên quan đến tạo token gửi lại cho user active tài khoản
+async function sendEmailActiveAccount(email, userId, userName) {
+  const token = jwt.sign({ userId: userId }, process.env.JWT_SECRET, {
+    expiresIn: "15m",
+  });
+  // Lưu token vào collection Verification
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+  //Xóa các verification cũ trước khi tạo verification mới cho user này.
+  await Verification.deleteMany({ userId: userId });
+  const verification = new Verification({
+    userId: userId,
+    code: token,
+    expiresAt,
+  });
+  await verification.save();
+  //Tạo link xác thực, khi người dùng click vào link sẽ hiển thị giao diện trên FE
+  //sau đó giao diện FE sẽ có một nút click "click để xác thực", FE sẽ gọi xuống BE để xác thực
+  const verificationUrl = `${process.env.FRONTEND_URL}/verify/${token}`;
+  // Render HTML từ Pug template
+  const emailContent = pug.renderFile(
+    path.join(__dirname, "../views/verify-email.pug"),
+    {
+      name: userName,
+      verificationUrl,
+    }
+  );
+  await sendEmail(email, "Xác thực tài khoản", emailContent);
+}
+
 module.exports = {
   hashPassword,
   comparePassword,
   generateFormattedPassword,
+  sendEmailActiveAccount,
 };
