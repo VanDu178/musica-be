@@ -1,0 +1,70 @@
+doctype html
+html
+  head
+    meta(charset="UTF-8")
+    title Xác thực tài khoản
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+      }
+      .email-container {
+        background-color: #ffffff;
+        max-width: 600px;
+        margin: auto;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .header h1 {
+        color: #2c3e50;
+        margin: 0;
+      }
+      .content {
+        font-size: 16px;
+        color: #333333;
+        line-height: 1.6;
+      }
+      .button {
+        display: inline-block;
+        margin-top: 25px;
+        padding: 12px 24px;
+        background-color: #3498db;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+      .button-secondary {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 10px 20px;
+        background-color: #95a5a6;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+      .footer {
+        margin-top: 40px;
+        font-size: 12px;
+        color: #999999;
+        text-align: center;
+      }
+  body
+    .email-container
+      .header
+        h1 Xác thực tài khoản của bạn
+      .content
+        p Xin chào #{name},
+        p Cảm ơn bạn đã đăng ký. Để hoàn tất quá trình đăng ký, vui lòng xác thực địa chỉ email của bạn bằng cách nhấn vào nút bên dưới:
+        div(style="text-align: center;")
+          a.button(href=verificationUrl) Xác thực ngay
+        p Nếu bạn không đăng ký tài khoản, bạn có thể bỏ qua email này.
+      .footer
+        p © 2025 Ứng dụng của bạn. Mọi quyền được bảo lưu.
