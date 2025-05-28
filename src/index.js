@@ -19,17 +19,13 @@ const app = express();
 //Đọc trong body.req
 app.use(express.json());
 
-//Cấu hình để đọc dữ liệu dạng formdata từ FE
-// Cấu hình nơi lưu trữ file (nếu có upload file)
-// const storage = multer.memoryStorage(); // hoặc dùng diskStorage để lưu vào ổ cứng
-// const upload = multer({ storage: storage });
-
 //2:Cấu hình cros để be có thể nhận request từ fe
 app.use(
   cors({
     origin: "http://localhost:3000", // Đảm bảo cho phép frontend gửi request
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Các phương thức HTTP được phép
     allowedHeaders: ["Content-Type", "Authorization"], // Các header được phép
+    credentials: true, // Cho phép gửi cookie
   })
 );
 //3: Cấu hình morgan để có thể ghi log cho mỗi request

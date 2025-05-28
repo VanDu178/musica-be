@@ -1,4 +1,5 @@
 const User = require("../models/User.model");
+const Role = require("../models/Role.model");
 const Verification = require("../models/Verification.model");
 const {
   hashPassword,
@@ -28,12 +29,15 @@ exports.register = async (req, res) => {
     }
     // Mã hóa mật khẩu trước khi lưu vào database
     const hashedPassword = await hashPassword(password);
+    //Set role mặc định cho tài khoản khi tạo
+    const defaultRole = await Role.findOne({ name: "user" });
     // Tạo người dùng mới
     const newUser = new User({
       username,
       email,
       password: hashedPassword,
       provider: "local",
+      role: defaultRole?._id,
     });
     await newUser.save({ session });
     await sendEmailActiveAccount(newUser.email, newUser._id, newUser.username);
@@ -53,18 +57,28 @@ exports.register = async (req, res) => {
 // // Đăng nhập người dùng
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-
   try {
     // Kiểm tra người dùng có tồn tại không
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).populate("role");
     if (!user) {
       return res.status(400).json({ message: "Tài khoản chưa được đăng kí" });
+    }
+
+    //Kiểm tra xem tài khoản đã được kích hoạt chưa
+    if (!user.isActive) {
+      return res.status(400).json({
+        message: "Tài khoản chưa được kích hoạt",
+        error_code: "ACCOUNT_NOT_ACTIVATED",
+      });
     }
 
     // Kiểm tra mật khẩu
     const isMatch = await comparePassword(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Mật khẩu không đúng" });
+      return res.status(400).json({
+        message: "Mật khẩu không đúng",
+        error_code: "INVALID_CREDENTIALS",
+      });
     }
 
     // Tạo JWT token
@@ -79,12 +93,18 @@ exports.login = async (req, res) => {
       }
     );
 
+    // Lưu refresh token dưới dạng HttpOnly cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      // secure: true, // Chỉ gửi qua HTTPS trong môi trường production
+      sameSite: "Strict", // Ngăn chặn CSRF
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
+    });
+
     res.status(200).json({
       message: "Đăng nhập thành công",
-      tokens: {
-        accessToken,
-        refreshToken,
-      },
+      accessToken,
+      role: user.role,
     });
   } catch (err) {
     res.status(500).json({ message: "Lỗi server" });
