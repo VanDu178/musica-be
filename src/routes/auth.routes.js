@@ -6,7 +6,7 @@ const authController = require("../controllers/auth.controller");
 //Đăng ký người dùng mới
 router.post("/register", authController.register);
 //Xác thực tài khoản
-router.patch("/active/:token", authController.active);
+router.patch("/active/:token", authController.active); //token là parameter nằm trong URL
 //Đăng nhập token
 router.post("/login", authController.login);
 //Đăng nhập bằng google

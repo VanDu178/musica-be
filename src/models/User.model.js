@@ -13,6 +13,8 @@ const userSchema = new mongoose.Schema({
     default: "local",
   },
   isActive: { type: Boolean, default: false },
+  isBan: { type: Boolean, default: false },
+  role: { type: mongoose.Schema.Types.ObjectId, ref: "Role", default: null },
 });
 
 // Cấu hình để ẩn mật khẩu khi trả về thông tin user cho FE
